@@ -1,88 +1,104 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
             {{ __('Admin Dashboard') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Statistics Overview -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Overview</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <div class="text-sm text-blue-600">Total Users</div>
-                            <div class="text-2xl font-bold text-blue-800">{{ \App\Models\User::count() }}</div>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-lg">
-                            <div class="text-sm text-green-600">Total Income</div>
-                            <div class="text-2xl font-bold text-green-800">$0</div>
-                        </div>
-                        <div class="bg-red-50 p-4 rounded-lg">
-                            <div class="text-sm text-red-600">Total Expenses</div>
-                            <div class="text-2xl font-bold text-red-800">$0</div>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <x-admin.sidebar />
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <div class="py-12">
+                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                    <!-- Statistics Overview -->
+                    <div id="statistics">
+                        <div class="dashboard-section">
+                            <div class="section-content">
+                                <h3 class="section-title">Overview</h3>
+                                <div class="statistics-grid">
+                                    <div class="stat-card stat-card-blue">
+                                        <div class="stat-label text-blue-600 dark:text-blue-400">Total Users</div>
+                                        <div class="stat-value text-blue-800 dark:text-blue-300">{{ \App\Models\User::count() }}</div>
+                                    </div>
+                                    <div class="stat-card stat-card-green">
+                                        <div class="stat-label text-green-600 dark:text-green-400">Total Income</div>
+                                        <div class="stat-value text-green-800 dark:text-green-300">$0</div>
+                                    </div>
+                                    <div class="stat-card stat-card-red">
+                                        <div class="stat-label text-red-600 dark:text-red-400">Total Expenses</div>
+                                        <div class="stat-value text-red-800 dark:text-red-300">$0</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Recent Users -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Users</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach(\App\Models\User::latest()->take(5)->get() as $user)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @foreach($user->roles as $role)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                {{ $role->name }}
-                                            </span>
-                                        @endforeach
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->diffForHumans() }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <!-- Recent Users -->
+                    <div id="recent-users">
+                        <div class="dashboard-section">
+                            <div class="section-content">
+                                <h3 class="section-title">Recent Users</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="users-table">
+                                        <thead class="users-table-header">
+                                            <tr>
+                                                <th class="users-table-cell text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                                                <th class="users-table-cell text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                                                <th class="users-table-cell text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                                                <th class="users-table-cell text-gray-500 dark:text-gray-300 uppercase tracking-wider">Joined</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            @foreach(\App\Models\User::latest()->take(5)->get() as $user)
+                                            <tr>
+                                                <td class="users-table-cell text-gray-900 dark:text-white">{{ $user->name }}</td>
+                                                <td class="users-table-cell text-gray-900 dark:text-white">{{ $user->email }}</td>
+                                                <td class="users-table-cell">
+                                                    @foreach($user->roles as $role)
+                                                        <span class="role-badge">
+                                                            {{ $role->name }}
+                                                        </span>
+                                                    @endforeach
+                                                </td>
+                                                <td class="users-table-cell text-gray-900 dark:text-white">{{ $user->created_at->diffForHumans() }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Quick Actions -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            Add New User
-                        </a>
-                        <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            View All Users
-                        </a>
-                        <a href="{{ route('admin.settings.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            System Settings
-                        </a>
-                        <a href="{{ route('admin.reports.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            View Reports
-                        </a>
+                    <!-- Quick Actions -->
+                    <div id="quick-actions">
+                        <div class="dashboard-section">
+                            <div class="section-content">
+                                <h3 class="section-title">Quick Actions</h3>
+                                <div class="quick-actions-grid">
+                                    <a href="{{ route('admin.users.create') }}" class="action-button">
+                                        Add New User
+                                    </a>
+                                    <a href="{{ route('admin.users.index') }}" class="action-button">
+                                        View All Users
+                                    </a>
+                                    <a href="{{ route('admin.settings.index') }}" class="action-button">
+                                        System Settings
+                                    </a>
+                                    <a href="{{ route('admin.reports.index') }}" class="action-button">
+                                        View Reports
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    @vite(['resources/css/dashboard.css', 'resources/js/dashboard.js'])
 </x-app-layout>

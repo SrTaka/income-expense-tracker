@@ -1,0 +1,80 @@
+/* Dashboard Layout */
+.dashboard-container {
+    @apply flex bg-gray-100 dark:bg-gray-900 min-h-screen;
+}
+
+.dashboard-sidebar {
+    @apply w-64 bg-white dark:bg-gray-800 shadow-lg h-screen fixed left-0 top-0 overflow-y-auto;
+}
+
+.dashboard-main {
+    @apply flex-1 ml-64;
+}
+
+/* Statistics Cards */
+.statistics-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+}
+
+.stat-card {
+    @apply p-4 rounded-lg;
+}
+
+.stat-card-blue {
+    @apply bg-blue-50 dark:bg-blue-900/20;
+}
+
+.stat-card-green {
+    @apply bg-green-50 dark:bg-green-900/20;
+}
+
+.stat-card-red {
+    @apply bg-red-50 dark:bg-red-900/20;
+}
+
+.stat-label {
+    @apply text-sm;
+}
+
+.stat-value {
+    @apply text-2xl font-bold;
+}
+
+/* Recent Users Table */
+.users-table {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.users-table-header {
+    @apply bg-gray-50 dark:bg-gray-700;
+}
+
+.users-table-cell {
+    @apply px-6 py-4 whitespace-nowrap;
+}
+
+.role-badge {
+    @apply px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300;
+}
+
+/* Quick Actions */
+.quick-actions-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.action-button {
+    @apply inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-gray-600 focus:bg-gray-700 dark:focus:bg-gray-600 active:bg-gray-900 dark:active:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150;
+}
+
+/* Section Containers */
+.dashboard-section {
+    @apply bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg;
+}
+
+.section-content {
+    @apply p-6;
+}
+
+.section-title {
+    @apply text-lg font-medium text-gray-900 dark:text-white mb-4;
+} 

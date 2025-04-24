@@ -4,7 +4,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\AdminSettingsController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\OrderController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -23,6 +27,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin routes protected by admin role middleware
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        // Notifications
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+        
+        // Settings
+        Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+        
         // User management
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -31,12 +45,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         
-        // Settings
-        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
-        
         // Reports
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        
+        // Products
+        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+        
+        // Orders
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     });
 });
 

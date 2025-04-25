@@ -12,37 +12,39 @@ class RoleSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create roles
-        $admin = Role::create(['name' => 'admin']);
-        $user = Role::create(['name' => 'user']);
-        $accountant = Role::create(['name' => 'accountant']);
-        
-        // Create permissions (optional)
+        $adminRole = Role::create(['name' => 'admin']);
+        $userRole = Role::create(['name' => 'user']);
+
+        // Create permissions
         $permissions = [
-            'create-income',
-            'edit-income',
-            'delete-income',
-            'create-expense',
-            'edit-expense',
-            'delete-expense',
-            'view-reports'
+            'view dashboard',
+            'manage users',
+            'manage roles',
+            'manage transactions',
+            'manage categories',
+            'view reports',
+            'manage settings'
         ];
-        
+
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
 
-        // Assign permissions to roles
-        $admin->givePermissionTo(Permission::all());
-        $accountant->givePermissionTo(['create-income', 'create-expense', 'view-reports']);
-        $user->givePermissionTo(['view-reports']);
+        // Assign all permissions to admin role
+        $adminRole->givePermissionTo(Permission::all());
+        
+        // Assign basic permissions to user role
+        $userRole->givePermissionTo([
+            'view dashboard',
+            'manage transactions'
+        ]);
     }
-    
 }
 
 

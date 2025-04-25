@@ -1,11 +1,11 @@
 <div x-data="{ open: false }" 
      @click.away="open = false"
-     class="fixed left-0 top-0 h-full bg-white dark:bg-gray-800 shadow-lg z-50 transition-all duration-300"
+     class="fixed left-0 top-16 h-[calc(100%-4rem)] bg-gray-50 dark:bg-gray-900 shadow-lg z-50 transition-all duration-300"
      :class="open ? 'w-64' : 'w-16'">
     
     <!-- Toggle Button -->
     <button @click="open = !open" 
-            class="w-full p-4 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+            class="w-full p-4 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path :class="{'hidden': open, 'block': !open}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             <path :class="{'hidden': !open, 'block': open}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

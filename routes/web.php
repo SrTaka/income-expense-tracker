@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\ProductController;
@@ -39,8 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin routes protected by admin role middleware
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        // Dashboard
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        // Admin Dashboard (uses same controller)
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
         // Notifications
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');

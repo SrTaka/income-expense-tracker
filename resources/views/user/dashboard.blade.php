@@ -38,7 +38,7 @@
                             <div class="space-y-4">
                                 <div class="flex justify-between items-center">
                                     <span class="text-gray-600 dark:text-gray-400">Total Expenses</span>
-                                    <span class="text-lg font-semibold text-red-600">${{ number_format($totalExpenses, 2) }}</span>
+                                    <span class="text-lg font-semibold text-red-600">${{ number_format($totalExpense, 2) }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-gray-600 dark:text-gray-400">This Month</span>

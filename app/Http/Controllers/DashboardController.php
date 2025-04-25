@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Category;
-use Carbon\Carbon;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
@@ -26,47 +27,111 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+        if (Auth::user()->hasRole('admin')) {
+            return $this->adminDashboard();
+        }
         
-        // Get total income and expenses
-        $totalIncome = Transaction::where('type', 'income')
-            ->where('user_id', $user->id)
-            ->sum('amount');
-            
-        $totalExpenses = Transaction::where('type', 'expense')
-            ->where('user_id', $user->id)
-            ->sum('amount');
+        return $this->userDashboard();
+    }
+
+    protected function adminDashboard()
+    {
+        // Get total users count
+        $totalUsers = User::count();
         
-        // Get monthly income and expenses
-        $monthlyIncome = Transaction::where('type', 'income')
-            ->where('user_id', $user->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->sum('amount');
-            
-        $monthlyExpenses = Transaction::where('type', 'expense')
-            ->where('user_id', $user->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->sum('amount');
-        
-        // Calculate balances
-        $balance = $totalIncome - $totalExpenses;
-        $monthlyBalance = $monthlyIncome - $monthlyExpenses;
+        // Get total transactions amount
+        $totalIncome = Transaction::where('type', 'income')->sum('amount');
+        $totalExpenses = Transaction::where('type', 'expense')->sum('amount');
         
         // Get recent transactions
-        $recentTransactions = Transaction::with('category')
-            ->where('user_id', $user->id)
-            ->latest('date')
-            ->take(10)
+        $recentTransactions = Transaction::with(['user', 'category'])
+            ->latest()
+            ->take(5)
             ->get();
-        
-        return view('user.dashboard', compact(
+            
+        // Get monthly statistics
+        $monthlyStats = Transaction::selectRaw('MONTH(created_at) as month, type, SUM(amount) as total')
+            ->whereYear('created_at', date('Y'))
+            ->groupBy('month', 'type')
+            ->get()
+            ->groupBy('month');
+            
+        // Get category distribution
+        $categoryStats = Transaction::select('category_id', DB::raw('SUM(amount) as total'))
+            ->with('category')
+            ->groupBy('category_id')
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
             'totalIncome',
             'totalExpenses',
+            'recentTransactions',
+            'monthlyStats',
+            'categoryStats'
+        ));
+    }
+
+    protected function userDashboard()
+    {
+        $user = Auth::user();
+        
+        // Get user's transactions amount
+        $totalIncome = Transaction::where('user_id', $user->id)
+            ->where('type', 'income')
+            ->sum('amount');
+            
+        $totalExpense = Transaction::where('user_id', $user->id)
+            ->where('type', 'expense')
+            ->sum('amount');
+
+        // Calculate monthly amounts
+        $monthlyIncome = Transaction::where('user_id', $user->id)
+            ->where('type', 'income')
+            ->whereMonth('created_at', now()->month)
+            ->sum('amount');
+
+        $monthlyExpenses = Transaction::where('user_id', $user->id)
+            ->where('type', 'expense')
+            ->whereMonth('created_at', now()->month)
+            ->sum('amount');
+
+        // Calculate balances
+        $balance = $totalIncome - $totalExpense;
+        $monthlyBalance = $monthlyIncome - $monthlyExpenses;
+        
+        // Get user's recent transactions
+        $recentTransactions = Transaction::with('category')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+            
+        // Get user's monthly statistics
+        $monthlyStats = Transaction::where('user_id', $user->id)
+            ->selectRaw('MONTH(created_at) as month, type, SUM(amount) as total')
+            ->whereYear('created_at', date('Y'))
+            ->groupBy('month', 'type')
+            ->get()
+            ->groupBy('month');
+            
+        // Get user's category distribution
+        $categoryStats = Transaction::where('user_id', $user->id)
+            ->select('category_id', DB::raw('SUM(amount) as total'))
+            ->with('category')
+            ->groupBy('category_id')
+            ->get();
+
+        return view('user.dashboard', compact(
+            'totalIncome',
+            'totalExpense',
             'monthlyIncome',
             'monthlyExpenses',
             'balance',
             'monthlyBalance',
-            'recentTransactions'
+            'recentTransactions',
+            'monthlyStats',
+            'categoryStats'
         ));
     }
 

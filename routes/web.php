@@ -20,6 +20,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // Income routes
+    Route::post('/income', [DashboardController::class, 'storeIncome'])->name('income.store');
+    
+    // Expense routes
+    Route::post('/expense', [DashboardController::class, 'storeExpense'])->name('expense.store');
+    
+    // Category routes
+    Route::post('/categories', [DashboardController::class, 'storeCategory'])->name('categories.store');
+    
+    // Commission routes
+    Route::post('/commission', [DashboardController::class, 'storeCommission'])->name('commission.store');
+    
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

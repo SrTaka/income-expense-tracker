@@ -7,101 +7,145 @@ use App\Models\Transaction;
 use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
-    
+    public function __construct()
+    {
+        // Share categories with all views
+        $incomeCategories = Category::where('type', 'income')->get();
+        $expenseCategories = Category::where('type', 'expense')->get();
+        
+        View::share('incomeCategories', $incomeCategories);
+        View::share('expenseCategories', $expenseCategories);
+    }
+
     /**
      * Display the appropriate dashboard based on user role
      */
     public function index()
     {
         $user = auth()->user();
-        $data = [];
-
-        // Get monthly income/expense trends for the last 6 months
-        $data['monthlyTrends'] = $this->getMonthlyTrends();
-
-        // Get category-wise expenses for the current month
-        $data['categoryExpenses'] = $this->getCategoryExpenses();
-
+        
+        // Get total income and expenses
+        $totalIncome = Transaction::where('type', 'income')
+            ->where('user_id', $user->id)
+            ->sum('amount');
+            
+        $totalExpenses = Transaction::where('type', 'expense')
+            ->where('user_id', $user->id)
+            ->sum('amount');
+        
+        // Get monthly income and expenses
+        $monthlyIncome = Transaction::where('type', 'income')
+            ->where('user_id', $user->id)
+            ->whereMonth('date', Carbon::now()->month)
+            ->sum('amount');
+            
+        $monthlyExpenses = Transaction::where('type', 'expense')
+            ->where('user_id', $user->id)
+            ->whereMonth('date', Carbon::now()->month)
+            ->sum('amount');
+        
+        // Calculate balances
+        $balance = $totalIncome - $totalExpenses;
+        $monthlyBalance = $monthlyIncome - $monthlyExpenses;
+        
         // Get recent transactions
-        $data['recentTransactions'] = $this->getRecentTransactions();
-
-        // Get current month summary
-        $data['monthlySummary'] = $this->getMonthlySummary();
-
-        if($user->hasRole('admin')) {
-            return view('admin.dashboard', $data);
-        }
-        
-        if($user->hasRole('accountant')) {
-            return view('accountant.dashboard', $data);
-        }
-        
-        return view('user.dashboard', $data);
-    }
-
-    /**
-     * Get monthly income/expense trends for the last 6 months
-     */
-    private function getMonthlyTrends()
-    {
-        $startDate = Carbon::now()->subMonths(5)->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-
-        return Transaction::select(
-            DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
-            DB::raw('SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as income'),
-            DB::raw('SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as expense')
-        )
-        ->whereBetween('date', [$startDate, $endDate])
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
-    }
-
-    /**
-     * Get category-wise expenses for the current month
-     */
-    private function getCategoryExpenses()
-    {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-
-        return Category::select('categories.name', DB::raw('SUM(transactions.amount) as total'))
-            ->join('transactions', 'categories.id', '=', 'transactions.category_id')
-            ->where('transactions.type', 'expense')
-            ->whereBetween('transactions.date', [$startDate, $endDate])
-            ->groupBy('categories.name')
-            ->orderBy('total', 'desc')
+        $recentTransactions = Transaction::with('category')
+            ->where('user_id', $user->id)
+            ->latest('date')
+            ->take(10)
             ->get();
+        
+        return view('user.dashboard', compact(
+            'totalIncome',
+            'totalExpenses',
+            'monthlyIncome',
+            'monthlyExpenses',
+            'balance',
+            'monthlyBalance',
+            'recentTransactions'
+        ));
     }
 
-    /**
-     * Get recent transactions
-     */
-    private function getRecentTransactions()
+    public function storeIncome(Request $request)
     {
-        return Transaction::with('category')
-            ->orderBy('date', 'desc')
-            ->take(5)
-            ->get();
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string|max:255',
+        ]);
+        
+        Transaction::create([
+            'user_id' => auth()->id(),
+            'type' => 'income',
+            'amount' => $request->amount,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'date' => now(),
+        ]);
+        
+        return redirect()->back()->with('success', 'Income added successfully.');
     }
-
-    /**
-     * Get current month summary
-     */
-    private function getMonthlySummary()
+    
+    public function storeExpense(Request $request)
     {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-
-        return Transaction::select(
-            DB::raw('SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as total_income'),
-            DB::raw('SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as total_expense')
-        )
-        ->whereBetween('date', [$startDate, $endDate])
-        ->first();
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string|max:255',
+        ]);
+        
+        Transaction::create([
+            'user_id' => auth()->id(),
+            'type' => 'expense',
+            'amount' => $request->amount,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'date' => now(),
+        ]);
+        
+        return redirect()->back()->with('success', 'Expense added successfully.');
+    }
+    
+    public function storeCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:income,expense',
+        ]);
+        
+        Category::create([
+            'name' => $request->name,
+            'type' => $request->type,
+        ]);
+        
+        return redirect()->back()->with('success', 'Category added successfully.');
+    }
+    
+    public function storeCommission(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:income,expense',
+            'amount' => 'required|numeric|min:0',
+            'percentage' => 'required|numeric|min:0|max:100',
+            'description' => 'nullable|string|max:255',
+        ]);
+        
+        // Calculate commission amount
+        $commissionAmount = ($request->amount * $request->percentage) / 100;
+        
+        Transaction::create([
+            'user_id' => auth()->id(),
+            'type' => $request->type,
+            'amount' => $commissionAmount,
+            'category_id' => Category::where('name', 'Commission')->first()->id,
+            'description' => $request->description,
+            'date' => now(),
+        ]);
+        
+        return redirect()->back()->with('success', 'Commission added successfully.');
     }
 }

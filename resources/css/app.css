@@ -1,3 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Dashboard Styles */
+.stat-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700;
+}
+
+.stat-icon {
+    @apply w-10 h-10 rounded-full flex items-center justify-center mb-3;
+}
+
+.stat-info {
+    @apply space-y-1;
+}
+
+.stat-label {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.stat-value {
+    @apply text-2xl font-semibold text-gray-900 dark:text-white;
+}
+
+.stat-change {
+    @apply text-xs flex items-center;
+}
+
+.stat-change.positive {
+    @apply text-green-600 dark:text-green-400;
+}
+
+.stat-change.negative {
+    @apply text-red-600 dark:text-red-400;
+}
+
+/* Table Styles */
+.users-table {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.users-table th {
+    @apply px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs leading-4 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
+}
+
+.users-table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white;
+}
+
+/* Status Badge */
+.status-badge {
+    @apply px-2 inline-flex text-xs leading-5 font-semibold rounded-full;
+}
+
+.status-active {
+    @apply bg-green-100 text-green-800;
+}
+
+.status-pending {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+/* Action Buttons */
+.action-button {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150;
+}

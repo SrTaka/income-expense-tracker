@@ -9,7 +9,7 @@
 
                 <!-- Email Address -->
                 <div>
-                    <x-input-label for="email" class="text-gray-100 font-medium text-sm tracking-wide" :value="__('Email')" />
+                    <x-input-label for="email" class="text-green-500 font-medium text-sm tracking-wide" :value="__('Email')" />
                     <x-text-input id="email" class="block mt-2 w-full text-gray-100 bg-[#1a1f2e] border-gray-600 focus:border-green-400 focus:ring-green-400 placeholder-gray-500" 
                                 type="email" 
                                 name="email" 
@@ -22,7 +22,7 @@
 
                 <!-- Password -->
                 <div class="mt-4">
-                    <x-input-label for="password" class="text-gray-100 font-medium text-sm tracking-wide" :value="__('Password')" />
+                    <x-input-label for="password" class="text-green-500 font-medium text-sm tracking-wide" :value="__('Password')" />
                     <x-text-input id="password" class="block mt-2 w-full text-gray-100 bg-[#1a1f2e] border-gray-600 focus:border-green-400 focus:ring-green-400 placeholder-gray-500"
                                 type="password"
                                 name="password"

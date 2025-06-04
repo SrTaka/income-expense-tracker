@@ -15,8 +15,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-100 antialiased bg-[#0f1117]">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-            <div class="w-full sm:max-w-md mt-6 px-8 py-6 bg-[#1a1f2e] shadow-lg overflow-hidden sm:rounded-lg">
+        <div class="flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+            <div class="w-full sm:max-w-md mt-6 px-8 bg-[#1a1f2e] shadow-lg overflow-hidden sm:rounded-lg">
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-white mb-2">Income Expense Tracker</h1>
                     <p class="text-gray-400">Effortlessly track your income and expenditures</p>

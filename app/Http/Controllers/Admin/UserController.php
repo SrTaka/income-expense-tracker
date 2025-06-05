@@ -34,7 +34,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required|array'
+            'role' => 'required|string|exists:roles,name'
         ]);
 
         $user = User::create([
@@ -43,7 +43,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        $user->assignRole($validated['roles']);
+        $user->assignRole($validated['role']);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
@@ -82,6 +82,7 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
     }
+
 
     public function destroy(User $user)
     {

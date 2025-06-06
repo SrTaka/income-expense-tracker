@@ -280,4 +280,24 @@
             </form>
         </div>
     </div>
-</div> 
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('delete-category', (event) => {
+        if (confirm('Are you sure you want to delete this category?')) {
+            const categoryId = event.detail;
+            axios.delete(`/categories/${categoryId}`)
+                .then(response => {
+                    console.log(response.data.message);
+                    // Refresh the page or remove the category from the UI
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error deleting category:', error);
+                    alert('Failed to delete category.');
+                });
+        }
+    });
+</script>
+@endpush 

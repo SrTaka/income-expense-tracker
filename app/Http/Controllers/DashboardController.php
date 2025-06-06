@@ -189,6 +189,16 @@ class DashboardController extends Controller
         
         return redirect()->back()->with('success', 'Category added successfully.');
     }
+    public function deleteCategory(Category $category)
+    {
+        // Update associated transactions to have no category
+        $category->transactions()->update(['category_id' => null]);
+
+        // Now delete the category
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Category and its associated transactions updated.');
+    }
     
     public function storeCommission(Request $request)
     {

@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Category routes
     Route::post('/categories', [DashboardController::class, 'storeCategory'])->name('categories.store');
+    Route::delete('/categories/{category}', [DashboardController::class, 'deleteCategory'])->name('categories.destroy');
     
     // Commission routes
     Route::post('/commission', [DashboardController::class, 'storeCommission'])->name('commission.store');
@@ -66,17 +67,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     });
 });
-
-// Route::middleware(['auth', 'role:admin'])->group(function () {
-//     // Admin-only routes
-// });
-
-// Route::middleware(['auth', 'permission:view-reports'])->group(function () {
-//     // Report routes
-// });
-
-// Route::get('/roles', function () {
-//     return Role::with('permissions')->get();
-// })->middleware('auth');
 
 require __DIR__.'/auth.php';
